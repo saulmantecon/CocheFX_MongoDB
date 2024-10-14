@@ -46,10 +46,7 @@ public class MenuViewController implements Initializable {
     @FXML
     private TextField textfieldModelo;
 
-    MongoClient con;
-    MongoCollection<Document> collection=null;
-    String json;
-    Document doc;
+
 
     @FXML
     void onClickCrear(ActionEvent event) {
@@ -82,9 +79,11 @@ public class MenuViewController implements Initializable {
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         try{
-            con= DatabaseManager.conectar();
-            MongoDatabase database= con.getDatabase("taller");
-            database.createCollection("Concesionario");
+            MongoDatabase database =DatabaseManager.getDatabase();
+            //Me devuelve una coleccion si no existe la crea
+            MongoCollection<Document> collection = database.getCollection("coches");
+
+
         }catch (Exception e){
             e.printStackTrace();
         }
