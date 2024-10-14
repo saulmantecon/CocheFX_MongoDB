@@ -1,6 +1,7 @@
 package org.example;
 
-import com.mongodb.MongoClient;
+import com.mongodb.ErrorCategory;
+import com.mongodb.MongoWriteException;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 import javafx.event.ActionEvent;
@@ -10,11 +11,11 @@ import javafx.scene.control.ComboBox;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
-import model.Coche;
 import org.bson.Document;
 import util.DatabaseManager;
 
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.ResourceBundle;
 
 public class MenuViewController implements Initializable {
@@ -46,6 +47,11 @@ public class MenuViewController implements Initializable {
     @FXML
     private TextField textfieldModelo;
 
+     String listaTipos[] = {"Coche", "fragoneta", "Camion", "tanque"};
+
+    MongoCollection<Document> collectionCoches;
+    MongoCollection<Document> collectionTipos;
+
 
 
     @FXML
@@ -54,10 +60,21 @@ public class MenuViewController implements Initializable {
         String marca = textfieldMarca.getText();
         String modelo = textfieldModelo.getText();
         String tipo = comboboxTipo.getValue();
-        Coche coche = new Coche(matricula, marca, modelo, tipo);
+        Document coche = new Document();
+        coche.append("matricula", matricula).append("marca", marca).append("modelo", modelo);
+        Document tipoCoche = new Document();
+        tipoCoche.append("tipo", tipo);
 
-
-
+        try {
+            //La función ".insertOne()" se utiliza para insertar el documento en la colección.
+            collectionCoches.insertOne(coche);
+            collectionTipos.insertOne(tipoCoche);
+            System.out.println("Documento Insertado Correctamente. \n");
+        } catch (MongoWriteException mwe) {
+            if (mwe.getError().getCategory().equals(ErrorCategory.DUPLICATE_KEY)) {
+                System.out.println("El documento con esa identificación ya existe");
+            }
+        }
     }
 
     @FXML
@@ -81,7 +98,9 @@ public class MenuViewController implements Initializable {
         try{
             MongoDatabase database =DatabaseManager.getDatabase();
             //Me devuelve una coleccion si no existe la crea
-            MongoCollection<Document> collection = database.getCollection("coches");
+            collectionCoches = database.getCollection("coches");
+            collectionTipos = database.getCollection("tipos");
+            comboboxTipo.getItems().addAll(listaTipos);
 
 
         }catch (Exception e){
