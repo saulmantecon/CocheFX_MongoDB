@@ -4,8 +4,6 @@ import DAO.CocheDAO;
 import com.mongodb.ErrorCategory;
 import com.mongodb.MongoClient;
 import com.mongodb.MongoWriteException;
-import com.mongodb.client.MongoCollection;
-import com.mongodb.client.MongoCursor;
 import com.mongodb.client.MongoDatabase;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -17,16 +15,14 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.input.MouseEvent;
 import model.Coche;
 import org.bson.Document;
 import util.Alerta;
 import util.DatabaseManager;
-
-import javax.swing.event.ChangeListener;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 import java.util.ResourceBundle;
 
 import static DAO.CocheDAO.collectionTipos;
@@ -61,6 +57,7 @@ public class MenuViewController implements Initializable {
     private TextField textfieldModelo;
 
      ArrayList<String> listaTipos = new ArrayList<>(Arrays.asList("Coche", "Moto", "Camion", "Tanque"));
+    ObservableList<Coche> listacoches;
 
 
     MongoClient con;
@@ -76,27 +73,14 @@ public class MenuViewController implements Initializable {
 
         Coche coche = new Coche(matricula, marca, modelo, tipo);
         Alerta.mostrarAlerta(CocheDAO.crearCoche(coche));
-        idTableView.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
-            if (newValue != null) {
-                // Carga los datos del coche seleccionado en los campos de texto
-                textfieldMatricula.setText(newValue.getMatricula());
-                textfieldMarca.setText(newValue.getMarca());
-                textfieldModelo.setText(newValue.getModelo());
-                comboboxTipo.setValue(newValue.getTipo());
-            } else {
-                // Limpia los campos si no hay selección
-                textfieldMatricula.clear();
-                textfieldMarca.clear();
-                textfieldModelo.clear();
-                comboboxTipo.setValue(null);
-            }
-        });
-        //esto no hace nada ->idTableView.refresh();
-
+        actualizarTableView();
     }
 
     @FXML
     void onClickEliminar(ActionEvent event) {
+        String matricula = textfieldMatricula.getText();
+        Alerta.mostrarAlerta(CocheDAO.eliminarCoche(matricula));
+        actualizarTableView();
     }
 
     @FXML
@@ -117,7 +101,7 @@ public class MenuViewController implements Initializable {
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         con = DatabaseManager.getConexion();
-        MongoDatabase database = con.getDatabase("concesionario");
+        MongoDatabase database = con.getDatabase("prueba");
         // Me devuelve una colección si no existe la crea
         CocheDAO.collectionCoches = database.getCollection("coches");
         collectionTipos = database.getCollection("tipos");
@@ -137,7 +121,24 @@ public class MenuViewController implements Initializable {
         idColumnMarca.setCellValueFactory(new PropertyValueFactory<>("marca"));
         idColumnModelo.setCellValueFactory(new PropertyValueFactory<>("modelo"));
         idColumnTipo.setCellValueFactory(new PropertyValueFactory<>("tipo"));
-        ObservableList<Coche> tablaCoches = FXCollections.observableArrayList(CocheDAO.listarCoches());
-        idTableView.setItems(tablaCoches);
+        actualizarTableView();
+
     }//initialize
+
+    public void clickFilaTableView(MouseEvent mouseEvent) {
+            Coche c = idTableView.getSelectionModel().getSelectedItem();
+            if (c!=null){
+                textfieldMatricula.setText(c.getMatricula());
+                textfieldMarca.setText(c.getMarca());
+                textfieldModelo.setText(c.getModelo());
+                comboboxTipo.setValue(c.getTipo());
+            }
+
+
+    }
+
+    public void actualizarTableView(){
+        listacoches = FXCollections.observableArrayList(CocheDAO.listarCoches());
+        idTableView.setItems(listacoches);
+    }
 }

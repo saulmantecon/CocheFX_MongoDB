@@ -4,11 +4,13 @@ import com.mongodb.ErrorCategory;
 import com.mongodb.MongoWriteException;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoCursor;
+import com.mongodb.client.model.Filters;
 import model.Coche;
 import org.bson.Document;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 public class CocheDAO {
 
@@ -30,6 +32,20 @@ public class CocheDAO {
         return mensaje;
     }//crear coche
 
+    public static String eliminarCoche(String matricula){
+        if (collectionCoches.deleteOne(Filters.eq("matricula",matricula)).getDeletedCount()>0){
+            return "Coche eliminado correctamente";
+        }else {
+            return "No se encontró ningun coche con esa matricula";
+        }
+
+    }//eliminarCoche
+
+    public static String actualizarCoche(Coche coche){
+       return null;
+
+    }
+
     public static List<Coche> listarCoches() {
         List<Coche> listaCoches = new ArrayList<>();
         try (MongoCursor<Document> cursor = collectionCoches.find().iterator()) {
@@ -49,7 +65,7 @@ public class CocheDAO {
             }
         }
         return listaCoches;
-    }
+    }//listarCoches
 
 
 

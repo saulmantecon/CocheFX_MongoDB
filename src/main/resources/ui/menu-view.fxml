@@ -8,10 +8,9 @@
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.AnchorPane?>
 
-
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="485.0" prefWidth="666.0" xmlns="http://javafx.com/javafx/22" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.example.MenuViewController">
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="485.0" prefWidth="666.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.example.MenuViewController">
    <children>
-      <TableView fx:id="idTableView" layoutX="200.0" layoutY="249.0" prefHeight="200.0" prefWidth="301.0">
+      <TableView fx:id="idTableView" layoutX="200.0" layoutY="249.0" onMouseClicked="#clickFilaTableView" prefHeight="200.0" prefWidth="301.0">
         <columns>
           <TableColumn fx:id="idColumnMatricula" prefWidth="75.0" text="Matricula" />
           <TableColumn fx:id="idColumnMarca" prefWidth="75.0" text="Marca" />

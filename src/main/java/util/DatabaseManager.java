@@ -29,8 +29,7 @@ public class DatabaseManager {
             int port = Integer.parseInt(prop.getProperty("port"));
             String username=prop.getProperty("username");
             String password=prop.getProperty("password");
-            final MongoClient conexion = new MongoClient(new MongoClientURI("mongodb://" + username + ":" + password + "@" + host + ":" + port + "/?authSource=admin"));
-            return conexion;
+            return new MongoClient(new MongoClientURI("mongodb://" + username + ":" + password + "@" + host + ":" + port + "/?authSource=admin"));
 
         }catch (Exception e){
             System.out.println(e);
