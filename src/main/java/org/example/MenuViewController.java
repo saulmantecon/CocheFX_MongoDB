@@ -58,6 +58,7 @@ public class MenuViewController implements Initializable {
 
      ArrayList<String> listaTipos = new ArrayList<>(Arrays.asList("Coche", "Moto", "Camion", "Tanque"));
     ObservableList<Coche> listacoches;
+    static String matriculaClick;
 
 
     MongoClient con;
@@ -94,7 +95,14 @@ public class MenuViewController implements Initializable {
 
     @FXML
     void onClickModificar(ActionEvent event) {
+        String matricula = textfieldMatricula.getText();
+        String marca = textfieldMarca.getText();
+        String modelo = textfieldModelo.getText();
+        String tipo = comboboxTipo.getValue();
 
+        Coche coche = new Coche(matricula, marca, modelo, tipo);
+        Alerta.mostrarAlerta(CocheDAO.actualizarCoche(coche,matriculaClick));
+        actualizarTableView();
     }
 
 
@@ -128,6 +136,7 @@ public class MenuViewController implements Initializable {
     public void clickFilaTableView(MouseEvent mouseEvent) {
             Coche c = idTableView.getSelectionModel().getSelectedItem();
             if (c!=null){
+                matriculaClick = c.getMatricula();
                 textfieldMatricula.setText(c.getMatricula());
                 textfieldMarca.setText(c.getMarca());
                 textfieldModelo.setText(c.getModelo());

@@ -41,10 +41,20 @@ public class CocheDAO {
 
     }//eliminarCoche
 
-    public static String actualizarCoche(Coche coche){
-       return null;
+    public static String actualizarCoche(Coche coche, String matriculavieja){
+        if (collectionCoches.updateOne(
+                new Document("matricula", matriculavieja),
+                new Document("$set", new Document("matricula", coche.getMatricula())
+                        .append("marca", coche.getMarca())
+                        .append("modelo", coche.getModelo())
+                        .append("tipo", coche.getTipo()))
+        ).getModifiedCount() > 0) {
+            return "coche modificado correctamente";
+        } else {
+            return "No se modificó ningun coche";
+        }
 
-    }
+        }//actualizarCoche
 
     public static List<Coche> listarCoches() {
         List<Coche> listaCoches = new ArrayList<>();
