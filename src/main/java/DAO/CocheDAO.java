@@ -17,44 +17,43 @@ public class CocheDAO {
     public static MongoCollection<Document> collectionCoches;
     public static MongoCollection<Document> collectionTipos;
 
-    public static String crearCoche(Coche coche) {
+    public static boolean crearCoche(Coche coche) {
         Document doc = new Document();
-        String mensaje="";
-        doc.append("matricula", coche.getMatricula()).append("marca", coche.getMarca()).append("modelo", coche.getModelo()).append("tipo", coche.getTipo());
+        boolean crear=false;
+        doc.append("matricula", coche.getMatricula())
+                .append("marca", coche.getMarca())
+                .append("modelo", coche.getModelo())
+                .append("tipo", coche.getTipo());
         try {
             collectionCoches.insertOne(doc);
-            mensaje = "Coche creado correctamente";
+            crear=true;
         }catch (MongoWriteException mwe) {
-            if (mwe.getError().getCategory().equals(ErrorCategory.DUPLICATE_KEY)) {
-                mensaje="El documento con esa identificación ya existe";
-            }
+            mwe.getError().getCategory();
         }
-        return mensaje;
+        return crear;
     }//crear coche
 
-    public static String eliminarCoche(String matricula){
+    public static boolean eliminarCoche(String matricula){
+        boolean eliminado=false;
         if (collectionCoches.deleteOne(Filters.eq("matricula",matricula)).getDeletedCount()>0){
-            return "Coche eliminado correctamente";
-        }else {
-            return "No se encontró ningun coche con esa matricula";
+            eliminado=true;
         }
-
+        return eliminado;
     }//eliminarCoche
 
-    public static String actualizarCoche(Coche coche, String matriculavieja){
+    public static boolean actualizarCoche(Coche coche, Coche cocheViejo){
+        boolean eliminado=false;
         if (collectionCoches.updateOne(
-                new Document("matricula", matriculavieja),
+                new Document("matricula", cocheViejo.getMatricula()),
                 new Document("$set", new Document("matricula", coche.getMatricula())
                         .append("marca", coche.getMarca())
                         .append("modelo", coche.getModelo())
                         .append("tipo", coche.getTipo()))
         ).getModifiedCount() > 0) {
-            return "coche modificado correctamente";
-        } else {
-            return "No se modificó ningun coche";
+            eliminado = true;
         }
-
-        }//actualizarCoche
+        return eliminado;
+    }//actualizarCoche
 
     public static List<Coche> listarCoches() {
         List<Coche> listaCoches = new ArrayList<>();
@@ -67,7 +66,6 @@ public class CocheDAO {
                 String tipo = (String) doc.get("tipo");
                 Coche c =  new Coche(matricula,marca,modelo,tipo);
                 listaCoches.add(c);
-
             }
         } catch (MongoWriteException mwe) {
             if (mwe.getError().getCategory().equals(ErrorCategory.DUPLICATE_KEY)) {

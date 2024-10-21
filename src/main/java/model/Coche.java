@@ -1,5 +1,7 @@
 package model;
 
+import java.util.Objects;
+
 public class Coche {
     private String matricula;
     private String marca;
@@ -58,5 +60,16 @@ public class Coche {
                 '}';
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Coche coche = (Coche) o;
+        return Objects.equals(matricula, coche.matricula) && Objects.equals(marca, coche.marca) && Objects.equals(modelo, coche.modelo) && Objects.equals(tipo, coche.tipo);
+    }
 
+    @Override
+    public int hashCode() {
+        return Objects.hash(matricula, marca, modelo, tipo);
+    }
 }

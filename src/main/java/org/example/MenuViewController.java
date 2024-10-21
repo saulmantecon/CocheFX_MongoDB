@@ -5,6 +5,7 @@ import com.mongodb.ErrorCategory;
 import com.mongodb.MongoClient;
 import com.mongodb.MongoWriteException;
 import com.mongodb.client.MongoDatabase;
+import com.mongodb.client.model.IndexOptions;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -56,13 +57,13 @@ public class MenuViewController implements Initializable {
     @FXML
     private TextField textfieldModelo;
 
-     ArrayList<String> listaTipos = new ArrayList<>(Arrays.asList("Coche", "Moto", "Camion", "Tanque"));
-    ObservableList<Coche> listacoches;
-    static String matriculaClick;
+    private ArrayList<String> listaTipos = new ArrayList<>(Arrays.asList("Coche", "Moto", "Camion", "Tanque"));
 
+    private ObservableList<Coche> listacoches;
+
+    static Coche cocheSeleccionado;
 
     MongoClient con;
-
 
 
     @FXML
@@ -71,18 +72,32 @@ public class MenuViewController implements Initializable {
         String marca = textfieldMarca.getText();
         String modelo = textfieldModelo.getText();
         String tipo = comboboxTipo.getValue();
-
         Coche coche = new Coche(matricula, marca, modelo, tipo);
-        Alerta.mostrarAlerta(CocheDAO.crearCoche(coche));
-        actualizarTableView();
-    }
+        if (CocheDAO.crearCoche(coche)){
+            listacoches.add(coche);
+            Alerta.mostrarAlerta("Coche Registrado con exito");
+        }else {
+            Alerta.mostrarAlerta("Error al registrar el coche");
+        }
+    }//onClickCrear
+
 
     @FXML
     void onClickEliminar(ActionEvent event) {
         String matricula = textfieldMatricula.getText();
-        Alerta.mostrarAlerta(CocheDAO.eliminarCoche(matricula));
-        actualizarTableView();
-    }
+        String marca = textfieldMarca.getText();
+        String modelo = textfieldModelo.getText();
+        String tipo = comboboxTipo.getValue();
+        Coche coche = new Coche(matricula, marca, modelo, tipo);
+        if (CocheDAO.eliminarCoche(matricula)){
+            listacoches.remove(coche);
+            Alerta.mostrarAlerta("Coche Eliminado con exito");
+        }else {
+            Alerta.mostrarAlerta("Error al eliminar el coche");
+        }
+      //  actualizarTableView();
+    }//onCLickEliminar
+
 
     @FXML
     void onClickLimpiar(ActionEvent event) {
@@ -91,7 +106,8 @@ public class MenuViewController implements Initializable {
         textfieldModelo.clear();
         comboboxTipo.setValue(null);
 
-    }
+    }//onClickLimpiar
+
 
     @FXML
     void onClickModificar(ActionEvent event) {
@@ -101,17 +117,24 @@ public class MenuViewController implements Initializable {
         String tipo = comboboxTipo.getValue();
 
         Coche coche = new Coche(matricula, marca, modelo, tipo);
-        Alerta.mostrarAlerta(CocheDAO.actualizarCoche(coche,matriculaClick));
-        actualizarTableView();
-    }
+        if (CocheDAO.actualizarCoche(coche,cocheSeleccionado)){
+            listacoches.add(listacoches.indexOf(cocheSeleccionado),coche);
+            listacoches.remove(cocheSeleccionado);
+            cocheSeleccionado = coche;//cambio el valor del coche seleccionado al modificado correctamente para que no me de error.
+            Alerta.mostrarAlerta("Coche Modificado con exito");
+        }else {
+            Alerta.mostrarAlerta("Error al modificar el coche, ");
+        }
+    }//onClickModificar
 
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         con = DatabaseManager.getConexion();
-        MongoDatabase database = con.getDatabase("prueba");
+        MongoDatabase database = con.getDatabase("Concesionario");
         // Me devuelve una colección si no existe la crea
         CocheDAO.collectionCoches = database.getCollection("coches");
+        CocheDAO.collectionCoches.createIndex(new Document("matricula",1), new IndexOptions().unique(true)); //le meto un indice ascemdente y le digo que sea unique para hacer comprobaciones
         collectionTipos = database.getCollection("tipos");
         Document tipos = new Document();
         tipos.append("tipos", listaTipos);
@@ -124,30 +147,23 @@ public class MenuViewController implements Initializable {
                 System.out.println("El documento con esa identificación ya existe");
             }
         }
-
         idColumnMatricula.setCellValueFactory(new PropertyValueFactory<>("matricula"));
         idColumnMarca.setCellValueFactory(new PropertyValueFactory<>("marca"));
         idColumnModelo.setCellValueFactory(new PropertyValueFactory<>("modelo"));
         idColumnTipo.setCellValueFactory(new PropertyValueFactory<>("tipo"));
-        actualizarTableView();
-
+        listacoches = FXCollections.observableArrayList(CocheDAO.listarCoches());
+        idTableView.setItems(listacoches);
     }//initialize
 
     public void clickFilaTableView(MouseEvent mouseEvent) {
-            Coche c = idTableView.getSelectionModel().getSelectedItem();
+             Coche c = idTableView.getSelectionModel().getSelectedItem();
             if (c!=null){
-                matriculaClick = c.getMatricula();
                 textfieldMatricula.setText(c.getMatricula());
                 textfieldMarca.setText(c.getMarca());
                 textfieldModelo.setText(c.getModelo());
                 comboboxTipo.setValue(c.getTipo());
+                cocheSeleccionado=c; //igualo el coche seleccionado a una variable static para poder utilizarlo
             }
+    }//clickFilaTableView
 
-
-    }
-
-    public void actualizarTableView(){
-        listacoches = FXCollections.observableArrayList(CocheDAO.listarCoches());
-        idTableView.setItems(listacoches);
-    }
-}
+}//menuViewController
