@@ -11,16 +11,15 @@ import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.control.ComboBox;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.MouseEvent;
 import model.Coche;
 import org.bson.Document;
 import util.Alerta;
 import util.DatabaseManager;
+import util.Validar;
+
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -57,7 +56,7 @@ public class MenuViewController implements Initializable {
     @FXML
     private TextField textfieldModelo;
 
-    private ArrayList<String> listaTipos = new ArrayList<>(Arrays.asList("Coche", "Moto", "Camion", "Tanque"));
+    private final ArrayList<String> listaTipos = new ArrayList<>(Arrays.asList("Coche", "Moto", "Camion", "Tanque"));
 
     private ObservableList<Coche> listacoches;
 
@@ -69,34 +68,61 @@ public class MenuViewController implements Initializable {
     @FXML
     void onClickCrear(ActionEvent event) {
         String matricula = textfieldMatricula.getText();
-        String marca = textfieldMarca.getText();
-        String modelo = textfieldModelo.getText();
-        String tipo = comboboxTipo.getValue();
-        Coche coche = new Coche(matricula, marca, modelo, tipo);
-        if (CocheDAO.crearCoche(coche)){
-            listacoches.add(coche);
-            Alerta.mostrarAlerta("Coche Registrado con exito");
+        if (Validar.validarMatriculaEuropea_Exp(matricula)){
+            String marca = textfieldMarca.getText();
+            String modelo = textfieldModelo.getText();
+            String tipo = comboboxTipo.getValue();
+            Coche coche = new Coche(matricula, marca, modelo, tipo);
+            if (CocheDAO.crearCoche(coche)){
+                listacoches.add(coche);
+                Alerta.mostrarAlerta("Coche Registrado con exito");
+            }else {
+                Alerta.mostrarAlerta("Error al registrar el coche");
+            }
         }else {
-            Alerta.mostrarAlerta("Error al registrar el coche");
+            Alerta.mostrarAlerta("Introduce una matricula correcta");
         }
+
     }//onClickCrear
 
 
     @FXML
     void onClickEliminar(ActionEvent event) {
         String matricula = textfieldMatricula.getText();
-        String marca = textfieldMarca.getText();
-        String modelo = textfieldModelo.getText();
-        String tipo = comboboxTipo.getValue();
-        Coche coche = new Coche(matricula, marca, modelo, tipo);
-        if (CocheDAO.eliminarCoche(matricula)){
-            listacoches.remove(coche);
-            Alerta.mostrarAlerta("Coche Eliminado con exito");
-        }else {
-            Alerta.mostrarAlerta("Error al eliminar el coche");
-        }
-      //  actualizarTableView();
+            String marca = textfieldMarca.getText();
+            String modelo = textfieldModelo.getText();
+            String tipo = comboboxTipo.getValue();
+            Coche coche = new Coche(matricula, marca, modelo, tipo);
+            if (CocheDAO.eliminarCoche(matricula)){
+                listacoches.remove(coche);
+                Alerta.mostrarAlerta("Coche Eliminado con exito");
+            }else {
+                Alerta.mostrarAlerta("Error al eliminar el coche");
+            }
     }//onCLickEliminar
+
+
+    @FXML
+    void onClickModificar(ActionEvent event) {
+        String matricula = textfieldMatricula.getText();
+        if (Validar.validarMatriculaEuropea_Exp(matricula)){
+            String marca = textfieldMarca.getText();
+            String modelo = textfieldModelo.getText();
+            String tipo = comboboxTipo.getValue();
+
+            Coche coche = new Coche(matricula, marca, modelo, tipo);
+            if (CocheDAO.actualizarCoche(coche,cocheSeleccionado)){
+                listacoches.add(listacoches.indexOf(cocheSeleccionado),coche);
+                listacoches.remove(cocheSeleccionado);
+                cocheSeleccionado = coche;//cambio el valor del coche seleccionado al modificado correctamente para que no me de error.
+                Alerta.mostrarAlerta("Coche Modificado con exito");
+            }else {
+                Alerta.mostrarAlerta("Error al modificar el coche, ");
+            }
+        }else {
+            Alerta.mostrarAlerta("Introduce una matricula correcta");
+        }
+    }//onClickModificar
 
 
     @FXML
@@ -107,25 +133,6 @@ public class MenuViewController implements Initializable {
         comboboxTipo.setValue(null);
 
     }//onClickLimpiar
-
-
-    @FXML
-    void onClickModificar(ActionEvent event) {
-        String matricula = textfieldMatricula.getText();
-        String marca = textfieldMarca.getText();
-        String modelo = textfieldModelo.getText();
-        String tipo = comboboxTipo.getValue();
-
-        Coche coche = new Coche(matricula, marca, modelo, tipo);
-        if (CocheDAO.actualizarCoche(coche,cocheSeleccionado)){
-            listacoches.add(listacoches.indexOf(cocheSeleccionado),coche);
-            listacoches.remove(cocheSeleccionado);
-            cocheSeleccionado = coche;//cambio el valor del coche seleccionado al modificado correctamente para que no me de error.
-            Alerta.mostrarAlerta("Coche Modificado con exito");
-        }else {
-            Alerta.mostrarAlerta("Error al modificar el coche, ");
-        }
-    }//onClickModificar
 
 
     @Override
