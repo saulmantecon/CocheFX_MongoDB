@@ -1,6 +1,6 @@
-package org.example;
+package org.example.controller;
 
-import DAO.CocheDAO;
+import org.example.DAO.CocheDAO;
 import com.mongodb.ErrorCategory;
 import com.mongodb.MongoClient;
 import com.mongodb.MongoWriteException;
@@ -17,16 +17,17 @@ import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.MouseEvent;
-import model.Coche;
+import org.example.model.Coche;
 import org.bson.Document;
-import util.Alerta;
-import util.DatabaseManager;
+import org.example.util.Alerta;
+import org.example.util.DatabaseManager;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Objects;
 import java.util.ResourceBundle;
 
-import static DAO.CocheDAO.collectionTipos;
+import static org.example.DAO.CocheDAO.collectionTipos;
 
 public class MenuViewController implements Initializable {
 
@@ -57,7 +58,7 @@ public class MenuViewController implements Initializable {
     @FXML
     private TextField textfieldModelo;
 
-    private ArrayList<String> listaTipos = new ArrayList<>(Arrays.asList("Coche", "Moto", "Camion", "Tanque"));
+    private final ArrayList<String> listaTipos = new ArrayList<>(Arrays.asList("Coche", "Moto", "Camion", "Tanque"));
 
     private ObservableList<Coche> listacoches;
 
@@ -73,7 +74,8 @@ public class MenuViewController implements Initializable {
         String modelo = textfieldModelo.getText();
         String tipo = comboboxTipo.getValue();
         Coche coche = new Coche(matricula, marca, modelo, tipo);
-        if (CocheDAO.crearCoche(coche)){
+        if (CocheDAO.crearCoche(coche) && !Objects.equals(matricula, "")  && !Objects.equals(marca, "")
+                && !Objects.equals(modelo, "")  && !Objects.equals(tipo, "")){
             listacoches.add(coche);
             Alerta.mostrarAlerta("Coche Registrado con exito");
         }else {
@@ -117,13 +119,13 @@ public class MenuViewController implements Initializable {
         String tipo = comboboxTipo.getValue();
 
         Coche coche = new Coche(matricula, marca, modelo, tipo);
-        if (CocheDAO.actualizarCoche(coche,cocheSeleccionado)){
+        if (cocheSeleccionado!=null && CocheDAO.actualizarCoche(coche,cocheSeleccionado)){
             listacoches.add(listacoches.indexOf(cocheSeleccionado),coche);
             listacoches.remove(cocheSeleccionado);
             cocheSeleccionado = coche;//cambio el valor del coche seleccionado al modificado correctamente para que no me de error.
             Alerta.mostrarAlerta("Coche Modificado con exito");
         }else {
-            Alerta.mostrarAlerta("Error al modificar el coche, ");
+            Alerta.mostrarAlerta("Error al modificar el coche");
         }
     }//onClickModificar
 

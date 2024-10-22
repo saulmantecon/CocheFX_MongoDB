@@ -9,9 +9,9 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="0.0" minWidth="-Infinity" prefHeight="543.0" prefWidth="400.0" xmlns="http://javafx.com/javafx/22" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.example.MenuViewController">
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="0.0" minWidth="-Infinity" prefHeight="543.0" prefWidth="400.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.example.controller.MenuViewController">
    <children>
-      <TableView fx:id="idTableView" layoutX="20.0" layoutY="291.0" onMouseClicked="#clickFilaTableView" prefHeight="238.0" prefWidth="361.0">
+      <TableView fx:id="idTableView" layoutX="20.0" layoutY="291.0" onMouseClicked="#clickFilaTableView" prefHeight="238.0" prefWidth="361.0" AnchorPane.bottomAnchor="13.599999999999994" AnchorPane.leftAnchor="20.0" AnchorPane.rightAnchor="18.399999999999977" AnchorPane.topAnchor="291.0">
         <columns>
           <TableColumn fx:id="idColumnMatricula" minWidth="-Infinity" prefWidth="86.0" text="Matrícula" />
           <TableColumn fx:id="idColumnMarca" minWidth="-Infinity" prefWidth="87.0" text="Marca" />
@@ -39,19 +39,19 @@
       <TextField fx:id="textfieldMarca" layoutX="126.0" layoutY="134.0" AnchorPane.leftAnchor="126.0" AnchorPane.rightAnchor="125.0" />
       <TextField fx:id="textfieldModelo" layoutX="126.0" layoutY="191.0" AnchorPane.leftAnchor="126.0" AnchorPane.rightAnchor="125.0" />
       <ComboBox fx:id="comboboxTipo" layoutX="126.0" layoutY="245.0" prefWidth="150.0" AnchorPane.leftAnchor="126.0" AnchorPane.rightAnchor="125.0" />
-      <Button layoutX="319.0" layoutY="79.0" mnemonicParsing="false" onAction="#onClickCrear" prefHeight="25.0" prefWidth="67.0" text="Crear" AnchorPane.leftAnchor="319.0" AnchorPane.rightAnchor="14.0">
+      <Button layoutX="319.0" layoutY="79.0" mnemonicParsing="false" onAction="#onClickCrear" prefHeight="25.0" prefWidth="67.0" text="Crear" AnchorPane.rightAnchor="14.0">
          <font>
             <Font name="System Italic" size="12.0" />
          </font></Button>
-      <Button layoutX="319.0" layoutY="132.0" mnemonicParsing="false" onAction="#onClickModificar" text="Modificar" AnchorPane.leftAnchor="319.0" AnchorPane.rightAnchor="14.0">
+      <Button layoutX="319.0" layoutY="132.0" mnemonicParsing="false" onAction="#onClickModificar" text="Modificar" AnchorPane.rightAnchor="14.0">
          <font>
             <Font name="System Italic" size="12.0" />
          </font></Button>
-      <Button layoutX="319.0" layoutY="189.0" mnemonicParsing="false" onAction="#onClickEliminar" prefHeight="25.0" prefWidth="67.0" text="Eliminar" AnchorPane.leftAnchor="319.0" AnchorPane.rightAnchor="14.0">
+      <Button layoutX="319.0" layoutY="189.0" mnemonicParsing="false" onAction="#onClickEliminar" prefHeight="25.0" prefWidth="67.0" text="Eliminar" AnchorPane.rightAnchor="14.0">
          <font>
             <Font name="System Italic" size="12.0" />
          </font></Button>
-      <Button layoutX="319.0" layoutY="243.0" mnemonicParsing="false" onAction="#onClickLimpiar" prefHeight="25.0" prefWidth="67.0" text="Limpiar" AnchorPane.leftAnchor="319.0" AnchorPane.rightAnchor="14.0">
+      <Button layoutX="319.0" layoutY="243.0" mnemonicParsing="false" onAction="#onClickLimpiar" prefHeight="25.0" prefWidth="67.0" text="Limpiar" AnchorPane.rightAnchor="14.0">
          <font>
             <Font name="System Italic" size="12.0" />
          </font></Button>

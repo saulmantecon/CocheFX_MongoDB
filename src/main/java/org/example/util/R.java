@@ -1,4 +1,4 @@
-package util;
+package org.example.util;
 
 import java.io.File;
 import java.io.InputStream;

@@ -1,4 +1,4 @@
-package util;
+package org.example.util;
 
 import com.mongodb.MongoClient;
 import com.mongodb.MongoClientURI;

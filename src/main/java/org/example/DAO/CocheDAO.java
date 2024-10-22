@@ -1,16 +1,15 @@
-package DAO;
+package org.example.DAO;
 
 import com.mongodb.ErrorCategory;
 import com.mongodb.MongoWriteException;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoCursor;
 import com.mongodb.client.model.Filters;
-import model.Coche;
+import org.example.model.Coche;
 import org.bson.Document;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 public class CocheDAO {
 
