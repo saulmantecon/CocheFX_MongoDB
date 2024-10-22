@@ -21,6 +21,8 @@ import org.example.model.Coche;
 import org.bson.Document;
 import org.example.util.Alerta;
 import org.example.util.DatabaseManager;
+import org.example.util.Validar;
+
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -70,17 +72,22 @@ public class MenuViewController implements Initializable {
     @FXML
     void onClickCrear(ActionEvent event) {
         String matricula = textfieldMatricula.getText();
-        String marca = textfieldMarca.getText();
-        String modelo = textfieldModelo.getText();
-        String tipo = comboboxTipo.getValue();
-        Coche coche = new Coche(matricula, marca, modelo, tipo);
-        if (CocheDAO.crearCoche(coche) && !Objects.equals(matricula, "")  && !Objects.equals(marca, "")
-                && !Objects.equals(modelo, "")  && !Objects.equals(tipo, "")){
-            listacoches.add(coche);
-            Alerta.mostrarAlerta("Coche Registrado con exito");
+        if (Validar.validarMatriculaEuropea_Exp(matricula)){
+            String marca = textfieldMarca.getText();
+            String modelo = textfieldModelo.getText();
+            String tipo = comboboxTipo.getValue();
+            Coche coche = new Coche(matricula, marca, modelo, tipo);
+            if (CocheDAO.crearCoche(coche) && !Objects.equals(matricula, "")  && !Objects.equals(marca, "")
+                    && !Objects.equals(modelo, "")  && !Objects.equals(tipo, "")){
+                listacoches.add(coche);
+                Alerta.mostrarAlerta("Coche Registrado con exito");
+            }else {
+                Alerta.mostrarAlerta("Error al registrar el coche");
+            }
         }else {
-            Alerta.mostrarAlerta("Error al registrar el coche");
+            Alerta.mostrarAlerta("Introduce una matrícula correcta");
         }
+
     }//onClickCrear
 
 
