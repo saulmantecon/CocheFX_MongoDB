@@ -21,6 +21,8 @@ import model.Coche;
 import org.bson.Document;
 import util.Alerta;
 import util.DatabaseManager;
+import util.Validar;
+
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -69,16 +71,22 @@ public class MenuViewController implements Initializable {
     @FXML
     void onClickCrear(ActionEvent event) {
         String matricula = textfieldMatricula.getText();
-        String marca = textfieldMarca.getText();
-        String modelo = textfieldModelo.getText();
-        String tipo = comboboxTipo.getValue();
-        Coche coche = new Coche(matricula, marca, modelo, tipo);
-        if (CocheDAO.crearCoche(coche)){
-            listacoches.add(coche);
-            Alerta.mostrarAlerta("Coche Registrado con exito");
+        if (!Validar.validarMatriculaEuropea_Exp(matricula)){
+            Alerta.mostrarAlerta("Escrfibe una matricula correcta");
+            matricula = textfieldMatricula.getText();
         }else {
-            Alerta.mostrarAlerta("Error al registrar el coche");
+            String marca = textfieldMarca.getText();
+            String modelo = textfieldModelo.getText();
+            String tipo = comboboxTipo.getValue();
+            Coche coche = new Coche(matricula, marca, modelo, tipo);
+            if (CocheDAO.crearCoche(coche)){
+                listacoches.add(coche);
+                Alerta.mostrarAlerta("Coche Registrado con exito");
+            }else {
+                Alerta.mostrarAlerta("Error al registrar el coche, mátricula ya existente");
+            }
         }
+
     }//onClickCrear
 
 
@@ -117,13 +125,14 @@ public class MenuViewController implements Initializable {
         String tipo = comboboxTipo.getValue();
 
         Coche coche = new Coche(matricula, marca, modelo, tipo);
-        if (CocheDAO.actualizarCoche(coche,cocheSeleccionado)){
+
+        if (cocheSeleccionado!=null && CocheDAO.actualizarCoche(coche,cocheSeleccionado)){
             listacoches.add(listacoches.indexOf(cocheSeleccionado),coche);
             listacoches.remove(cocheSeleccionado);
             cocheSeleccionado = coche;//cambio el valor del coche seleccionado al modificado correctamente para que no me de error.
             Alerta.mostrarAlerta("Coche Modificado con exito");
         }else {
-            Alerta.mostrarAlerta("Error al modificar el coche, ");
+            Alerta.mostrarAlerta("Error al modificar el coche ");
         }
     }//onClickModificar
 
@@ -136,16 +145,14 @@ public class MenuViewController implements Initializable {
         CocheDAO.collectionCoches = database.getCollection("coches");
         CocheDAO.collectionCoches.createIndex(new Document("matricula",1), new IndexOptions().unique(true)); //le meto un indice ascemdente y le digo que sea unique para hacer comprobaciones
         collectionTipos = database.getCollection("tipos");
+        collectionTipos.createIndex(new Document("tipo",1), new IndexOptions().unique(true));
         Document tipos = new Document();
         tipos.append("tipos", listaTipos);
         comboboxTipo.getItems().addAll(listaTipos);
         try {
-            //La función ".insertOne()" se utiliza para insertar el documento en la colección.
-            collectionTipos.insertOne(tipos);
-        } catch (MongoWriteException mwe) {
-            if (mwe.getError().getCategory().equals(ErrorCategory.DUPLICATE_KEY)) {
-                System.out.println("El documento con esa identificación ya existe");
-            }
+            collectionTipos.insertOne(tipos);//La función ".insertOne()" se utiliza para insertar el documento en la colección.
+        } catch (MongoWriteException _) {
+            //ya estaría creada la colección
         }
         idColumnMatricula.setCellValueFactory(new PropertyValueFactory<>("matricula"));
         idColumnMarca.setCellValueFactory(new PropertyValueFactory<>("marca"));
